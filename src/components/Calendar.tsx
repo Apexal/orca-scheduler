@@ -18,12 +18,9 @@ type PropTypes = {
   sections: CourseSection[];
 };
 export default function Calendar({ sections }: PropTypes) {
-  console.log(sections);
-
   const events = sections
     .map((s) => s.periods.map((p) => periodToEvent(s, p)))
     .flat();
-  console.log(events);
 
   return (
     <FullCalendar
@@ -34,7 +31,7 @@ export default function Calendar({ sections }: PropTypes) {
       events={events}
       slotMinTime="08:00:00"
       slotMaxTime="22:00:00"
-      timeZone="local"
+      timeZone="America/New_York"
     />
   );
 }
