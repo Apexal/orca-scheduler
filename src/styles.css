@@ -1,2 +1,15 @@
-.App {
+.section-box {
+  position: relative;
+}
+
+.section-box .edit-button {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  opacity: 0.3;
+  transition: opacity 0.2s;
+}
+
+.section-box .edit-button:hover {
+  opacity: 1;
 }
