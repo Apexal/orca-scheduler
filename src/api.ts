@@ -11,3 +11,8 @@ export async function fetchSectionsFromCRNs(
   );
   return await response.json();
 }
+
+export async function fetchSemesters() {
+  const response = await fetch(`${API_BASE}/semesters`);
+  return await response.json();
+}

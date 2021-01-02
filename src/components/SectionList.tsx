@@ -1,5 +1,5 @@
 import React from "react";
-import { CourseSection } from "../interfaces";
+import { Semester, CourseSection } from "../interfaces";
 import Section from "./Section";
 
 type PropTypes = {
@@ -14,17 +14,7 @@ export default function SectionList({
 }: PropTypes) {
   return (
     <div>
-      <h2 className="title is-size-4">Your Courses</h2>
-      <form className="mb-4 is-flex">
-        <input
-          className="input is-rounded"
-          type="text"
-          placeholder="Your CRNs from SIS"
-        />
-        <button className="button is-rounded is-danger ml-2" type="button">
-          Clear
-        </button>
-      </form>
+      <h2 className="title is-size-3">Your Courses</h2>
       <div className="sections">
         {sections.map((s) => (
           <Section key={s.crn} section={s} setSelectedCRN={setSelectedCRN} />

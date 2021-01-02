@@ -22,16 +22,30 @@ export default function Calendar({ sections }: PropTypes) {
     .map((s) => s.periods.map((p) => periodToEvent(s, p)))
     .flat();
 
+  // Sort works because time strings are in standard HH:mm format!
+  const sortedTimes = events
+    .map((e) => [e.startTime, e.endTime])
+    .flat()
+    .sort();
+
+  const earliestPeriodStart = sortedTimes[0];
+  const latestPeriodEnd = sortedTimes[sortedTimes.length - 1];
+
   return (
-    <FullCalendar
-      plugins={[dayGridPlugin, timeGridPlugin]}
-      initialView="timeGridWeek"
-      weekends={false}
-      allDaySlot={false}
-      events={events}
-      slotMinTime="08:00:00"
-      slotMaxTime="22:00:00"
-      timeZone="America/New_York"
-    />
+    <div className="calendar">
+      <h2 className="title is-size-3">Your Schedule</h2>
+      <FullCalendar
+        plugins={[dayGridPlugin, timeGridPlugin]}
+        initialView="timeGridWeek"
+        headerToolbar={false}
+        dayHeaderFormat={{ weekday: "short" }}
+        weekends={false}
+        allDaySlot={false}
+        events={events}
+        slotMinTime={earliestPeriodStart ?? "06:00:00"}
+        slotMaxTime={latestPeriodEnd ?? "23:00:00"}
+        timeZone="America/New_York"
+      />
+    </div>
   );
 }
