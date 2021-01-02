@@ -14,12 +14,20 @@ export default function App() {
 
   return (
     <div className="App">
-      <div>
-        <SectionList crns={crns} sections={sections} />
-      </div>
-      <div>
-        <Calendar sections={sections} />
-      </div>
+      <main>
+        <section className="section">
+          <div className="container">
+            <div className="columns">
+              <div className="column">
+                <SectionList crns={crns} sections={sections} />
+              </div>
+              <div className="column">
+                <Calendar sections={sections} />
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
