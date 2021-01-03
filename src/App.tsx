@@ -10,7 +10,7 @@ import { setEqual } from "./utils";
 import "./styles.css";
 
 export default function App() {
-  const [crns, setCRNs] = React.useState<string[]>([]);
+  const [crns, setCRNs] = React.useState<string[]>(["44468"]);
   const [isFetching, setIsFetching] = React.useState(false);
 
   const [semesters, setSemesters] = React.useState<Semester[]>([]);
@@ -20,6 +20,13 @@ export default function App() {
 
   const [sections, setSections] = React.useState<CourseSection[]>([]);
   const [selectedCRN, setSelectedCRN] = React.useState<string | null>(null);
+
+  const updateSection = (crn: string, updates: Partial<CourseSection>) => {
+    const newSections = sections.map((s) =>
+      s.crn === crn ? { ...s, ...updates } : s
+    );
+    setSections(newSections);
+  };
 
   const handleCRNChange = (event: React.FormEvent<HTMLInputElement>) => {
     const newCRNs = event.currentTarget.value
@@ -91,6 +98,7 @@ export default function App() {
             {editingSection && (
               <SectionModal
                 section={editingSection}
+                updateSection={updateSection}
                 setSelectedCRN={setSelectedCRN}
               />
             )}
@@ -102,7 +110,6 @@ export default function App() {
                       {sem.title}
                     </option>
                   ))}
-                  <option value="a">a</option>
                 </select>
               </div>
               <div className={`control ${isFetching ? "is-loading" : ""}`}>

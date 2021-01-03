@@ -13,12 +13,19 @@ const dayNames = [
 
 type PropTypes = {
   section: CourseSection;
+  updateSection: (crn: string, updates: Partial<CourseSection>) => void;
   setSelectedCRN: (crn: string | null) => void;
 };
-export default function SectionModal({ section, setSelectedCRN }: PropTypes) {
-  const instructors = Array.from(
-    new Set(section.periods.map((p) => p.instructors).flat())
-  );
+export default function SectionModal({
+  section,
+  updateSection,
+  setSelectedCRN
+}: PropTypes) {
+  const handleChange = (key: string, value: string) => {
+    updateSection(section.crn, {
+      [key]: value
+    });
+  };
 
   return (
     <div className="modal is-active">
@@ -31,37 +38,24 @@ export default function SectionModal({ section, setSelectedCRN }: PropTypes) {
           </p>
         </header>
         <section className="modal-card-body">
-          <p>
-            <strong>{instructors.length} Instructors:</strong>
-            {Array.from(instructors).join(", ")}
-          </p>
-          <table className="table is-fullwidth is-narrow">
-            <thead>
-              <tr>
-                <th>Days</th>
-                <th>Class</th>
-                <th>Start</th>
-                <th>End</th>
-                <th>Location</th>
-              </tr>
-            </thead>
-            <tbody>
-              {section.periods.map((p) => (
-                <tr key={p.days + p.start_time}>
-                  <td>{p.days.map((d: number) => dayNames[d]).join(", ")}</td>
-                  <td>{p.type}</td>
-                  <td>{p.start_time}</td>
-                  <td>{p.end_time}</td>
-                  <td>{p.location || "-"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="field">
+            <div className="control">
+              <input
+                onChange={(event) =>
+                  handleChange("course_title", event.currentTarget.value)
+                }
+                name="course_title"
+                type="text"
+                className="input"
+                defaultValue={section.course_title}
+              />
+            </div>
+          </div>
         </section>
         <footer className="modal-card-foot">
           <button className="button is-success">Save</button>
           <button className="button" onClick={() => setSelectedCRN(null)}>
-            Cancel
+            Close
           </button>
         </footer>
       </div>
