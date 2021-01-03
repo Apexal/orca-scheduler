@@ -33,8 +33,7 @@ export default function SectionModal({
       <div className="modal-card">
         <header className="modal-card-head">
           <p className="modal-card-title">
-            {section.course_title} - {section.course_subject_prefix}{" "}
-            {section.course_number}
+            {section.course_subject_prefix} {section.course_number}
           </p>
         </header>
         <section className="modal-card-body">

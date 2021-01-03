@@ -4,7 +4,7 @@ import { CourseSection, Semester } from "./interfaces";
 import Calendar from "./components/Calendar";
 import SectionList from "./components/SectionList";
 import SectionModal from "./components/SectionModal";
-import { generateICSFromSections } from "./services/export";
+import { download, generateICSFromSections } from "./services/export";
 import { setEqual } from "./utils";
 
 import "./styles.css";
@@ -73,8 +73,12 @@ export default function App() {
   const editingSection = sections.find((s) => s.crn === selectedCRN);
 
   function exportAsICS() {
-    const icsString = generateICSFromSections(semesters[0], sections);
-    console.log(icsString);
+    const { error, value } = generateICSFromSections(semesters[0], sections);
+    if (error) {
+      alert(error);
+    } else if (value) {
+      download(selectedSemesterId + ".ical", value);
+    }
   }
 
   return (
@@ -112,7 +116,11 @@ export default function App() {
                   ))}
                 </select>
               </div>
-              <div className={`control ${isFetching ? "is-loading" : ""}`}>
+              <div
+                className={`control is-flex-grow-1 ${
+                  isFetching ? "is-loading" : ""
+                }`}
+              >
                 <input
                   className="input is-rounded"
                   type="text"
@@ -120,12 +128,6 @@ export default function App() {
                   onChange={handleCRNChange}
                 />
               </div>
-              <button
-                className="button is-rounded is-danger ml-2"
-                type="button"
-              >
-                Clear
-              </button>
             </form>
             <hr />
             <div className="columns">
@@ -144,6 +146,7 @@ export default function App() {
             <div className="buttons">
               <button
                 className="button is-rounded is-primary is-fullwidth"
+                disabled={sections.length === 0}
                 onClick={exportAsICS}
               >
                 Export as ICS File
