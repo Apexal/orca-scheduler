@@ -1,13 +1,15 @@
 import { createEvents, EventAttributes } from "ics";
 import RRule from "rrule";
 
-import { CourseSection, CourseSectionPeriod, Semester } from "./interfaces";
+import { CourseSection, CourseSectionPeriod, Semester } from "../interfaces";
 import {
+  capitalize,
   dateToRRuleDateArray,
+  firstDayAferDate,
   periodDuration,
   sectionInstructors,
   timeStringToDate
-} from "./utils";
+} from "../utils";
 
 const dayRRules = [
   RRule.SU,
@@ -26,15 +28,15 @@ function periodDescription(
   const duration = periodDuration(period);
 
   const lines = [
-    `${duration.hours}h ${duration.minutes} ${period.type} period`,
+    `<b>[${section.course_title} - ${section.course_subject_prefix} ${section.course_number}]</b>`,
+    `<i>${duration.hours}h ${duration.minutes} ${period.type} period</i>`,
+    `<i>${section.instruction_method}</i>`,
     "",
     `<b>CRN</b> ${section.crn}`,
     `<b>Section</b> ${section.section_id}`,
     `<b>Credits</b> ${section.credits.join("/")}`,
     `<b>Section</b> ${section.section_id}`,
-    `<b>Instructors</b> ${sectionInstructors(section).join(", ")}`,
-    "",
-    `<i>${section.instruction_method}</i>`
+    `<b>Instructors</b> ${sectionInstructors(section).join(", ")}`
   ];
 
   return lines.join("\n");
@@ -47,6 +49,7 @@ function periodToICALEvent(
   period: CourseSectionPeriod
 ): EventAttributes {
   // Generate proper recurrence rule for this period
+  startDate = firstDayAferDate(startDate, period.days);
   const start = timeStringToDate(startDate, period.start_time);
   const end = timeStringToDate(startDate, period.end_time);
 
@@ -61,7 +64,7 @@ function periodToICALEvent(
   return {
     start: dateToRRuleDateArray(start),
     end: dateToRRuleDateArray(end),
-    title: section.course_title + " " + period.type,
+    title: section.course_title + " " + capitalize(period.type),
     location: period.location,
     description: periodDescription(section, period),
     recurrenceRule: rule.toString().replace("RRULE:", "")
@@ -72,8 +75,8 @@ export function generateICSFromSections(
   semester: Semester,
   sections: CourseSection[]
 ) {
-  const semesterStartDate = new Date(semester.end_date);
-  const semesterEndDate = new Date(semester.start_date);
+  const semesterStartDate = new Date(semester.start_date);
+  const semesterEndDate = new Date(semester.end_date);
 
   const events = sections
     .map((section) =>

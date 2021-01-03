@@ -1,10 +1,10 @@
 import * as React from "react";
-import { fetchSemesters, fetchSectionsFromCRNs } from "./api";
+import { fetchSemesters, fetchSectionsFromCRNs } from "./services/api";
 import { CourseSection, Semester } from "./interfaces";
 import Calendar from "./components/Calendar";
 import SectionList from "./components/SectionList";
 import SectionModal from "./components/SectionModal";
-import { generateICSFromSections } from "./export";
+import { generateICSFromSections } from "./services/export";
 import { setEqual } from "./utils";
 
 import "./styles.css";
