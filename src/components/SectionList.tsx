@@ -3,13 +3,11 @@ import { CourseSection } from "../interfaces";
 import Section from "./Section";
 
 type PropTypes = {
-  crns: string[];
   sections: CourseSection[];
   setSelectedCRN: (crn: string | null) => void;
   removeSection: (crn: string) => void;
 };
 export default function SectionList({
-  crns,
   sections,
   setSelectedCRN,
   removeSection

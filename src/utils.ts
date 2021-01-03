@@ -44,6 +44,16 @@ export function setEqual(a: Set<any>, b: Set<any>) {
   return a.size === b.size && Array.from(a).every((value) => b.has(value));
 }
 
+export function setDifference(oldSet: Set<any>, newSet: Set<any>) {
+  let diff = new Set(newSet);
+  for (let el of Array.from(oldSet)) {
+    if (diff.has(el)) {
+      diff.delete(el);
+    }
+  }
+  return diff;
+}
+
 export function firstDayAferDate(startDate: Date, days: number[]): Date {
   let daysSet = new Set(days);
   let date = toDate(startDate);

@@ -5,12 +5,11 @@ import Calendar from "./components/Calendar";
 import SectionList from "./components/SectionList";
 import SectionModal from "./components/SectionModal";
 import { download, generateICSFromSections } from "./services/export";
-import { setEqual } from "./utils";
+import { setDifference, setEqual } from "./utils";
 
 import "./styles.css";
 
 export default function App() {
-  const [crns, setCRNs] = React.useState<string[]>(["44468"]);
   const [isFetching, setIsFetching] = React.useState(false);
 
   const [semesters, setSemesters] = React.useState<Semester[]>([]);
@@ -20,6 +19,31 @@ export default function App() {
 
   const [sections, setSections] = React.useState<CourseSection[]>([]);
   const [selectedCRN, setSelectedCRN] = React.useState<string | null>(null);
+
+  // Fetch sections from CRNs
+  const addSections = (newCRNs: string[]) => {
+    if (isFetching || !selectedSemesterId) return;
+
+    // Determine missing CRNS to fetch
+    const oldCRNs = sections.map((s) => s.crn);
+    newCRNs = Array.from(setDifference(new Set(oldCRNs), new Set(newCRNs)));
+    console.log(newCRNs);
+
+    if (newCRNs.length > 0) {
+      setIsFetching(true);
+      fetchSectionsFromCRNs(selectedSemesterId, newCRNs)
+        .then((s) => {
+          setSections([...sections, ...s]);
+        })
+        .catch((err) => {
+          // Invalid CRNs, don't reset
+          alert(err);
+        })
+        .finally(() => {
+          setIsFetching(false);
+        });
+    }
+  };
 
   const updateSection = (crn: string, updates: Partial<CourseSection>) => {
     const newSections = sections.map((s) =>
@@ -32,15 +56,15 @@ export default function App() {
     setSections(sections.filter((s) => s.crn !== crn));
   };
 
-  const handleCRNChange = (event: React.FormEvent<HTMLInputElement>) => {
-    const newCRNs = event.currentTarget.value
+  const addNewCRNs = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const newCRNs = event.currentTarget["new-crns"].value
       .trim()
       .split(/\D/)
-      .filter((crn) => crn.length > 0);
+      .filter((crn: string) => crn.length > 0);
 
-    if (!setEqual(new Set(newCRNs), new Set(crns))) {
-      setCRNs(newCRNs);
-    }
+    addSections(newCRNs);
+    event.currentTarget["new-crns"].value = "";
   };
 
   const handleSemesterChange = (event: React.FormEvent<HTMLSelectElement>) => {
@@ -54,24 +78,6 @@ export default function App() {
       setSelectedSemesterId(sems[0].semester_id);
     });
   }, []);
-
-  // Fetch sections from CRNs
-  React.useEffect(() => {
-    if (isFetching || !selectedSemesterId) return;
-
-    setIsFetching(true);
-
-    fetchSectionsFromCRNs(selectedSemesterId, crns)
-      .then((s) => {
-        setSections(s);
-      })
-      .catch((err) => {
-        // Invalid CRNs, don't reset
-      })
-      .finally(() => {
-        setIsFetching(false);
-      });
-  }, [crns, selectedSemesterId]);
 
   // Find section being edited (can be undefined)
   const editingSection = sections.find((s) => s.crn === selectedCRN);
@@ -100,7 +106,6 @@ export default function App() {
         </section>
       </header>
       <main>
-        <p>{isFetching}</p>
         <section className="section">
           <div className="container">
             {editingSection && (
@@ -110,7 +115,7 @@ export default function App() {
                 setSelectedCRN={setSelectedCRN}
               />
             )}
-            <form className="mb-5 is-flex">
+            <form onSubmit={addNewCRNs} className="mb-5 is-flex">
               <div className="select is-rounded mr-2">
                 <select onChange={handleSemesterChange}>
                   {semesters.map((sem) => (
@@ -120,24 +125,29 @@ export default function App() {
                   ))}
                 </select>
               </div>
-              <div
-                className={`control is-flex-grow-1 ${
-                  isFetching ? "is-loading" : ""
-                }`}
-              >
-                <input
-                  className="input is-rounded"
-                  type="text"
-                  placeholder="Your CRNs from SIS"
-                  onChange={handleCRNChange}
-                />
+              <div className="field is-flex-grow-1 has-addons">
+                <div
+                  className={`control is-expanded ${
+                    isFetching ? "is-loading" : ""
+                  }`}
+                >
+                  <input
+                    name="new-crns"
+                    className="input is-rounded"
+                    type="text"
+                    placeholder="Type/paste your CRNs here with any separator"
+                    required
+                  />
+                </div>
+                <div className="control">
+                  <button className="button is-rounded is-success">Add</button>
+                </div>
               </div>
             </form>
             <hr />
             <div className="columns">
               <div className="column">
                 <SectionList
-                  crns={crns}
                   sections={sections}
                   setSelectedCRN={setSelectedCRN}
                   removeSection={removeSection}
@@ -148,9 +158,9 @@ export default function App() {
               </div>
             </div>
 
-            <div className="buttons">
+            <div className="buttons mt-5">
               <button
-                className="button is-rounded is-primary is-fullwidth"
+                className="button is-large is-rounded is-primary is-fullwidth"
                 disabled={sections.length === 0}
                 onClick={exportAsICS}
               >
