@@ -4,26 +4,71 @@ import { CourseSection, Semester } from "./interfaces";
 import Calendar from "./components/Calendar";
 import SectionList from "./components/SectionList";
 import SectionModal from "./components/SectionModal";
+import { generateICSFromSections } from "./export";
+import { setEqual } from "./utils";
+
 import "./styles.css";
 
 export default function App() {
-  const [crns, setCRNs] = React.useState<string[]>(["40307", "41973"]);
+  const [crns, setCRNs] = React.useState<string[]>([]);
+  const [isFetching, setIsFetching] = React.useState(false);
+
   const [semesters, setSemesters] = React.useState<Semester[]>([]);
+  const [selectedSemesterId, setSelectedSemesterId] = React.useState<
+    string | null
+  >(null);
+
   const [sections, setSections] = React.useState<CourseSection[]>([]);
   const [selectedCRN, setSelectedCRN] = React.useState<string | null>(null);
 
+  const handleCRNChange = (event: React.FormEvent<HTMLInputElement>) => {
+    const newCRNs = event.currentTarget.value
+      .trim()
+      .split(/\D/)
+      .filter((crn) => crn.length > 0);
+
+    if (!setEqual(new Set(newCRNs), new Set(crns))) {
+      setCRNs(newCRNs);
+    }
+  };
+
+  const handleSemesterChange = (event: React.FormEvent<HTMLSelectElement>) => {
+    setSelectedSemesterId(event.currentTarget.value);
+  };
+
   // Fetch semesters
   React.useEffect(() => {
-    fetchSemesters().then(setSemesters);
+    fetchSemesters().then((sems) => {
+      setSemesters(sems);
+      setSelectedSemesterId(sems[0].semester_id);
+    });
   }, []);
 
   // Fetch sections from CRNs
   React.useEffect(() => {
-    fetchSectionsFromCRNs("202101", crns).then(setSections);
-  }, [crns]);
+    if (isFetching || !selectedSemesterId) return;
+
+    setIsFetching(true);
+
+    fetchSectionsFromCRNs(selectedSemesterId, crns)
+      .then((s) => {
+        setSections(s);
+      })
+      .catch((err) => {
+        // Invalid CRNs, don't reset
+      })
+      .finally(() => {
+        setIsFetching(false);
+      });
+  }, [crns, selectedSemesterId]);
 
   // Find section being edited (can be undefined)
   const editingSection = sections.find((s) => s.crn === selectedCRN);
+
+  function exportAsICS() {
+    const icsString = generateICSFromSections(semesters[0], sections);
+    console.log(icsString);
+  }
 
   return (
     <div className="App">
@@ -40,6 +85,7 @@ export default function App() {
         </section>
       </header>
       <main>
+        <p>{isFetching}</p>
         <section className="section">
           <div className="container">
             {editingSection && (
@@ -50,19 +96,23 @@ export default function App() {
             )}
             <form className="mb-5 is-flex">
               <div className="select is-rounded mr-2">
-                <select>
+                <select onChange={handleSemesterChange}>
                   {semesters.map((sem) => (
                     <option key={sem.semester_id} value={sem.semester_id}>
                       {sem.title}
                     </option>
                   ))}
+                  <option value="a">a</option>
                 </select>
               </div>
-              <input
-                className="input is-rounded"
-                type="text"
-                placeholder="Your CRNs from SIS"
-              />
+              <div className={`control ${isFetching ? "is-loading" : ""}`}>
+                <input
+                  className="input is-rounded"
+                  type="text"
+                  placeholder="Your CRNs from SIS"
+                  onChange={handleCRNChange}
+                />
+              </div>
               <button
                 className="button is-rounded is-danger ml-2"
                 type="button"
@@ -85,10 +135,10 @@ export default function App() {
             </div>
 
             <div className="buttons">
-              <button className="button is-rounded is-fullwidth is-primary">
-                Import into Google Calendar
-              </button>
-              <button className="button is-rounded is-primary is-outlined is-fullwidth">
+              <button
+                className="button is-rounded is-primary is-fullwidth"
+                onClick={exportAsICS}
+              >
                 Export as ICS File
               </button>
             </div>

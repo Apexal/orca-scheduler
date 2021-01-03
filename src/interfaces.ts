@@ -13,5 +13,6 @@ export interface CourseSection {
 
 export interface CourseSectionPeriod {
   instructors: string[];
+  days: number[];
   [key: string]: any;
 }

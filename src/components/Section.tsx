@@ -26,7 +26,7 @@ export default function Section({ section, setSelectedCRN }: PropTypes) {
       <strong></strong>
       <p className="subtitle is-size-6">
         CRN {section.crn} | Section {section.section_id} |{" "}
-        {section.credits.join("/")} credits | {section.instruction_method}
+        {section.credits.join("/")} Credits | {section.instruction_method}
       </p>
 
       <details>

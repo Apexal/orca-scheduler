@@ -9,7 +9,11 @@ export async function fetchSectionsFromCRNs(
   const response = await fetch(
     `${API_BASE}/${semesterId}/sections?${params.toString()}`
   );
-  return await response.json();
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error(response.statusText);
+  }
 }
 
 export async function fetchSemesters() {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Semester, CourseSection } from "../interfaces";
+import { CourseSection } from "../interfaces";
 import Section from "./Section";
 
 type PropTypes = {
