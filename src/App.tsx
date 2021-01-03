@@ -1,16 +1,20 @@
 import * as React from "react";
 import { fetchSemesters, fetchSectionsFromCRNs } from "./services/api";
 import { CourseSection, Semester } from "./interfaces";
+import { download, generateICSFromSections } from "./services/export";
+import { setDifference } from "./utils";
+
 import Calendar from "./components/Calendar";
 import SectionList from "./components/SectionList";
 import SectionModal from "./components/SectionModal";
-import { download, generateICSFromSections } from "./services/export";
-import { setDifference } from "./utils";
+import ImportGuideModal from "./components/ImportGuideModal";
 
 import "./styles.css";
 
 export default function App() {
   const [isFetching, setIsFetching] = React.useState(false);
+
+  const [isGuideModalOpen, setIsGuideModalOpen] = React.useState(false);
 
   const [semesters, setSemesters] = React.useState<Semester[]>([]);
   const [selectedSemesterId, setSelectedSemesterId] = React.useState<
@@ -168,12 +172,21 @@ export default function App() {
                     disabled={sections.length === 0}
                     onClick={exportAsICS}
                   >
-                    Export for Google Calendar/Apple Calendar
+                    Download for Google/Apple/Outlook Calendar
+                  </button>
+                  <button
+                    onClick={() => setIsGuideModalOpen(true)}
+                    className="button is-rounded is-fullwidth"
+                  >
+                    How to import?
                   </button>
                 </div>
               </React.Fragment>
             )}
           </div>
+          {isGuideModalOpen && (
+            <ImportGuideModal close={() => setIsGuideModalOpen(false)} />
+          )}
         </section>
       </main>
     </div>
