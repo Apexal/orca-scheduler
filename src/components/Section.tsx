@@ -6,16 +6,29 @@ const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 type PropTypes = {
   section: CourseSection;
   setSelectedCRN: (crn: string | null) => void;
+  removeSection: (crn: string) => void;
 };
-export default function Section({ section, setSelectedCRN }: PropTypes) {
+export default function Section({
+  section,
+  removeSection,
+  setSelectedCRN
+}: PropTypes) {
   return (
     <div className="box section-box">
-      <button
-        className="button is-warning is-small edit-button"
-        onClick={() => setSelectedCRN(section.crn)}
-      >
-        Edit
-      </button>
+      <div className="buttons section-buttons">
+        <button
+          className="button is-warning is-small edit-button"
+          onClick={() => setSelectedCRN(section.crn)}
+        >
+          Edit
+        </button>
+        <button
+          className="button is-danger is-small remove-button"
+          onClick={() => removeSection(section.crn)}
+        >
+          X
+        </button>
+      </div>
       <summary>
         <strong className="is-size-5">
           {section.course_title} - {section.course_subject_prefix}{" "}
@@ -29,7 +42,7 @@ export default function Section({ section, setSelectedCRN }: PropTypes) {
         {section.credits.join("/")} Credits | {section.instruction_method}
       </p>
 
-      <details>
+      {/* <details>
         <summary>Show Schedule</summary>
 
         <div className="table-container">
@@ -58,7 +71,7 @@ export default function Section({ section, setSelectedCRN }: PropTypes) {
             </tbody>
           </table>
         </div>
-      </details>
+      </details> */}
     </div>
   );
 }

@@ -28,6 +28,10 @@ export default function App() {
     setSections(newSections);
   };
 
+  const removeSection = (crn: string) => {
+    setSections(sections.filter((s) => s.crn !== crn));
+  };
+
   const handleCRNChange = (event: React.FormEvent<HTMLInputElement>) => {
     const newCRNs = event.currentTarget.value
       .trim()
@@ -136,6 +140,7 @@ export default function App() {
                   crns={crns}
                   sections={sections}
                   setSelectedCRN={setSelectedCRN}
+                  removeSection={removeSection}
                 />
               </div>
               <div className="column">

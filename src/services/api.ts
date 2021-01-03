@@ -18,5 +18,9 @@ export async function fetchSectionsFromCRNs(
 
 export async function fetchSemesters() {
   const response = await fetch(`${API_BASE}/semesters`);
-  return await response.json();
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error(response.statusText);
+  }
 }

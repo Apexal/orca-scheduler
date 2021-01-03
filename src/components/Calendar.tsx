@@ -45,6 +45,8 @@ export default function Calendar({ sections }: PropTypes) {
         events={events}
         slotMinTime={earliestPeriodStart ?? "06:00:00"}
         slotMaxTime={latestPeriodEnd ?? "23:00:00"}
+        height="auto"
+        eventColor="hsl(171, 100%, 41%)"
         timeZone="America/New_York"
       />
     </div>

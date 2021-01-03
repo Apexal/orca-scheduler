@@ -2,14 +2,14 @@
   position: relative;
 }
 
-.section-box .edit-button {
+.section-box .section-buttons {
   position: absolute;
   right: 15px;
   top: 15px;
-  opacity: 0.3;
+  opacity: 0;
   transition: opacity 0.2s;
 }
 
-.section-box .edit-button:hover {
+.section-box:hover .section-buttons {
   opacity: 1;
 }

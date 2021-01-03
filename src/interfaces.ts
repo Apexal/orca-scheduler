@@ -6,13 +6,22 @@ export interface Semester {
 }
 
 export interface CourseSection {
+  semester_id: string;
+  section_id: string;
   crn: string;
+  course_title: string;
+  course_subject_prefix: string;
+  course_number: string;
+  credits: number[];
+  instruction_method: string | null;
   periods: CourseSectionPeriod[];
-  [key: string]: any;
+  // [key: string]: any;
 }
 
 export interface CourseSectionPeriod {
-  instructors: string[];
   days: number[];
+  start_time: string;
+  end_time: string;
+  instructors: string[];
   [key: string]: any;
 }
