@@ -53,9 +53,8 @@ export default function SectionModal({
           </div>
         </section>
         <footer className="modal-card-foot">
-          <button className="button is-success">Save</button>
           <button className="button" onClick={() => setSelectedCRN(null)}>
-            Close
+            Done
           </button>
         </footer>
       </div>

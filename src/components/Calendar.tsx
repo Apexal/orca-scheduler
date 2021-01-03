@@ -3,12 +3,13 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { CourseSection, CourseSectionPeriod } from "../interfaces";
+import { capitalize } from "../utils";
 
 const periodToEvent = (
   section: CourseSection,
   period: CourseSectionPeriod
 ) => ({
-  title: section.course_title + " " + period.type,
+  title: section.course_title + " " + capitalize(period.type),
   daysOfWeek: period.days,
   startTime: period.start_time,
   endTime: period.end_time
