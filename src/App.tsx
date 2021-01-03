@@ -8,6 +8,7 @@ import Calendar from "./components/Calendar";
 import SectionList from "./components/SectionList";
 import SectionModal from "./components/SectionModal";
 import ImportGuideModal from "./components/ImportGuideModal";
+import Footer from "./components/Footer";
 
 import "./styles.css";
 
@@ -172,13 +173,13 @@ export default function App() {
                     disabled={sections.length === 0}
                     onClick={exportAsICS}
                   >
-                    Download for Google/Apple/Outlook Calendar
+                    Download Schedule
                   </button>
                   <button
                     onClick={() => setIsGuideModalOpen(true)}
                     className="button is-rounded is-fullwidth"
                   >
-                    How to import?
+                    Import Guide for Google/Apple/Outlook Calendar
                   </button>
                 </div>
               </React.Fragment>
@@ -189,6 +190,7 @@ export default function App() {
           )}
         </section>
       </main>
+      <Footer />
     </div>
   );
 }
