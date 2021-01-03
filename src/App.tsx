@@ -5,7 +5,7 @@ import Calendar from "./components/Calendar";
 import SectionList from "./components/SectionList";
 import SectionModal from "./components/SectionModal";
 import { download, generateICSFromSections } from "./services/export";
-import { setDifference, setEqual } from "./utils";
+import { setDifference } from "./utils";
 
 import "./styles.css";
 
@@ -99,7 +99,8 @@ export default function App() {
             <div className="container">
               <h1 className="title">RPI Schedule Calendar Importer</h1>
               <h2 className="subtitle">
-                Powered by <strong>ORCA</strong>
+                Powered by <strong>ORCA</strong>, the open-source RPI schedule
+                API for student projects
               </h2>
             </div>
           </div>
@@ -136,6 +137,7 @@ export default function App() {
                     className="input is-rounded"
                     type="text"
                     placeholder="Type/paste your CRNs here with any separator"
+                    minLength={5}
                     required
                   />
                 </div>
@@ -144,29 +146,33 @@ export default function App() {
                 </div>
               </div>
             </form>
-            <hr />
-            <div className="columns">
-              <div className="column">
-                <SectionList
-                  sections={sections}
-                  setSelectedCRN={setSelectedCRN}
-                  removeSection={removeSection}
-                />
-              </div>
-              <div className="column">
-                <Calendar sections={sections} />
-              </div>
-            </div>
+            {sections.length > 0 && (
+              <React.Fragment>
+                <hr />
+                <div className="columns">
+                  <div className="column">
+                    <SectionList
+                      sections={sections}
+                      setSelectedCRN={setSelectedCRN}
+                      removeSection={removeSection}
+                    />
+                  </div>
+                  <div className="column">
+                    <Calendar sections={sections} />
+                  </div>
+                </div>
 
-            <div className="buttons mt-5">
-              <button
-                className="button is-large is-rounded is-primary is-fullwidth"
-                disabled={sections.length === 0}
-                onClick={exportAsICS}
-              >
-                Export as ICS File
-              </button>
-            </div>
+                <div className="buttons mt-5">
+                  <button
+                    className="button is-large is-rounded is-primary is-fullwidth"
+                    disabled={sections.length === 0}
+                    onClick={exportAsICS}
+                  >
+                    Export for Google Calendar/Apple Calendar
+                  </button>
+                </div>
+              </React.Fragment>
+            )}
           </div>
         </section>
       </main>
