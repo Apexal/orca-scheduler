@@ -25,3 +25,8 @@ export interface CourseSectionPeriod {
   instructors: string[];
   [key: string]: any;
 }
+
+export interface Notification {
+  type: "danger" | "success" | "info";
+  message: string;
+}

@@ -3,7 +3,7 @@ import { fetchSemesters, fetchSectionsFromCRNs } from "./services/api";
 import { CourseSection, Semester } from "./interfaces";
 import { download, generateICSFromSections } from "./services/export";
 import { setDifference } from "./utils";
-
+import useNotifications from "./hooks/notifications";
 import Calendar from "./components/Calendar";
 import SectionList from "./components/SectionList";
 import SectionModal from "./components/SectionModal";
@@ -14,9 +14,12 @@ import "./styles.css";
 
 export default function App() {
   const [isFetching, setIsFetching] = React.useState(false);
-
   const [isGuideModalOpen, setIsGuideModalOpen] = React.useState(false);
-
+  const [
+    notifications,
+    addNotification,
+    removeNotification
+  ] = useNotifications();
   const [semesters, setSemesters] = React.useState<Semester[]>([]);
   const [selectedSemesterId, setSelectedSemesterId] = React.useState<
     string | null
@@ -32,17 +35,31 @@ export default function App() {
     // Determine missing CRNS to fetch
     const oldCRNs = sections.map((s) => s.crn);
     newCRNs = Array.from(setDifference(new Set(oldCRNs), new Set(newCRNs)));
-    console.log(newCRNs);
 
     if (newCRNs.length > 0) {
       setIsFetching(true);
       fetchSectionsFromCRNs(selectedSemesterId, newCRNs)
         .then((s) => {
           setSections([...sections, ...s]);
+          console.log(newCRNs);
+          console.log(s.map((sec) => sec.crn));
+
+          const notFoundCRNS = Array.from(
+            setDifference(new Set(s.map((sec) => sec.crn)), new Set(newCRNs))
+          );
+          if (notFoundCRNS.length > 0) {
+            addNotification({
+              type: "info",
+              message: `Couldn't find sections ${notFoundCRNS.join(", ")}`
+            });
+          }
         })
         .catch((err) => {
           // Invalid CRNs, don't reset
-          alert(err);
+          addNotification({
+            type: "danger",
+            message: "Failed to fetch sections."
+          });
         })
         .finally(() => {
           setIsFetching(false);
@@ -78,10 +95,18 @@ export default function App() {
 
   // Fetch semesters
   React.useEffect(() => {
-    fetchSemesters().then((sems) => {
-      setSemesters(sems);
-      setSelectedSemesterId(sems[0].semester_id);
-    });
+    fetchSemesters()
+      .then((sems) => {
+        setSemesters(sems);
+        setSelectedSemesterId(sems[0].semester_id);
+      })
+      .catch((err) => {
+        addNotification({
+          type: "danger",
+          message: "Failed to fetch semesters!"
+        });
+        console.error(err);
+      });
   }, []);
 
   // Find section being edited (can be undefined)
@@ -90,7 +115,10 @@ export default function App() {
   function exportAsICS() {
     const { error, value } = generateICSFromSections(semesters[0], sections);
     if (error) {
-      alert(error);
+      addNotification({
+        type: "danger",
+        message: "Failed to download!"
+      });
     } else if (value) {
       download(selectedSemesterId + ".ical", value);
     }
@@ -121,6 +149,15 @@ export default function App() {
                 setSelectedCRN={setSelectedCRN}
               />
             )}
+            {notifications.map((note, index) => (
+              <div key={index} className={"notification is-" + note.type}>
+                <button
+                  className="delete"
+                  onClick={() => removeNotification(index)}
+                />
+                {note.message}
+              </div>
+            ))}
             <form onSubmit={addNewCRNs} className="mb-5 is-flex">
               <div className="select is-rounded mr-2">
                 <select onChange={handleSemesterChange}>
