@@ -45,32 +45,7 @@ export default function Section({
       {/* <details>
         <summary>Show Schedule</summary>
 
-        <div className="table-container">
-          <table className="table is-fullwidth is-narrow">
-            <thead>
-              <tr>
-                <th>Days</th>
-                <th>Class</th>
-                <th>Time</th>
-                <th>Location</th>
-                <th>Instructors</th>
-              </tr>
-            </thead>
-            <tbody>
-              {section.periods.map((p) => (
-                <tr key={p.days + p.start_time}>
-                  <td>{p.days.map((d: number) => dayNames[d]).join(", ")}</td>
-                  <td className="is-capitalized">{p.type}</td>
-                  <td>
-                    {p.start_time} - {p.end_time}
-                  </td>
-                  <td>{p.location || "—"}</td>
-                  <td>{p.instructors.join(", ")}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        
       </details> */}
     </div>
   );

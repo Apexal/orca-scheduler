@@ -1,24 +1,23 @@
 import React from "react";
-import { CourseSection } from "../interfaces";
+import { CourseSection, CourseSectionPeriod } from "../interfaces";
+import { copyArrayOfObjs } from "../utils";
 
-const dayNames = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday"
-];
+const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 type PropTypes = {
   section: CourseSection;
   updateSection: (crn: string, updates: Partial<CourseSection>) => void;
+  updatePeriod: (
+    crn: string,
+    periodIndex: number,
+    updates: Partial<CourseSectionPeriod>
+  ) => void;
   setSelectedCRN: (crn: string | null) => void;
 };
 export default function SectionModal({
   section,
   updateSection,
+  updatePeriod,
   setSelectedCRN
 }: PropTypes) {
   const handleChange = (key: string, value: string) => {
@@ -26,6 +25,12 @@ export default function SectionModal({
       [key]: value
     });
   };
+
+  function handlePeriodChange(periodIndex: number, key: string, value: any) {
+    updatePeriod(section.crn, periodIndex, {
+      [key]: value
+    });
+  }
 
   return (
     <div className="modal is-active">
@@ -49,6 +54,121 @@ export default function SectionModal({
                 defaultValue={section.course_title}
               />
             </div>
+          </div>
+
+          <div className="table-container">
+            <table className="table is-fullwidth is-narrow">
+              <thead>
+                <tr>
+                  <th>Days</th>
+                  <th>Class</th>
+                  <th>Time</th>
+                  <th>Location</th>
+                  <th>Instructors</th>
+                </tr>
+              </thead>
+              <tbody>
+                {section.periods.map((p, periodIndex) => (
+                  <tr key={p.days + p.start_time}>
+                    <td>
+                      <select
+                        defaultValue={p.days.map((d) => d.toString())}
+                        onChange={(event) =>
+                          handlePeriodChange(
+                            periodIndex,
+                            "days",
+                            Array.from(
+                              event.currentTarget.selectedOptions
+                            ).map((option) => parseInt(option.value, 10))
+                          )
+                        }
+                        multiple
+                      >
+                        {dayNames.map((name, day) => (
+                          <option key={day} value={day}>
+                            {name}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="is-capitalized">
+                      <select
+                        defaultValue={p.type}
+                        onChange={(event) =>
+                          handlePeriodChange(
+                            periodIndex,
+                            "type",
+                            event.currentTarget.value
+                          )
+                        }
+                      >
+                        {[
+                          "lecture",
+                          "studio",
+                          "recitation",
+                          "seminar",
+                          "lab",
+                          "test"
+                        ].map((classType) => (
+                          <option key={classType} value={classType}>
+                            {classType}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <input
+                        type="time"
+                        defaultValue={p.start_time}
+                        max={p.end_time}
+                        onChange={(event) =>
+                          handlePeriodChange(
+                            periodIndex,
+                            "start_time",
+                            event.currentTarget.value
+                          )
+                        }
+                      />
+                      <input
+                        type="time"
+                        defaultValue={p.end_time}
+                        min={p.start_time}
+                        onChange={(event) =>
+                          handlePeriodChange(
+                            periodIndex,
+                            "end_time",
+                            event.currentTarget.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        defaultValue={p.location}
+                        onChange={(event) =>
+                          handlePeriodChange(
+                            periodIndex,
+                            "location",
+                            event.currentTarget.value
+                          )
+                        }
+                      />
+                    </td>
+                    <td>{p.instructors.join(", ")}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={5}>
+                    <button className="button is-small" disabled>
+                      Add Section
+                    </button>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
         </section>
         <footer className="modal-card-foot">

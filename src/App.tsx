@@ -1,6 +1,6 @@
 import * as React from "react";
 import { fetchSemesters, fetchSectionsFromCRNs } from "./services/api";
-import { CourseSection, Semester } from "./interfaces";
+import { CourseSection, CourseSectionPeriod, Semester } from "./interfaces";
 import { download, generateICSFromSections } from "./services/export";
 import { setDifference } from "./utils";
 import useNotifications from "./hooks/notifications";
@@ -78,6 +78,20 @@ export default function App() {
     setSections(sections.filter((s) => s.crn !== crn));
   };
 
+  function updatePeriod(
+    crn: string,
+    periodIndex: number,
+    updates: Partial<CourseSectionPeriod>
+  ) {
+    const section = sections.find((s) => s.crn === crn);
+    const newPeriods = section?.periods.map((p, index) =>
+      index === periodIndex ? { ...p, ...updates } : p
+    );
+    updateSection(crn, {
+      periods: newPeriods
+    });
+  }
+
   const addNewCRNs = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const newCRNs = event.currentTarget["new-crns"].value
@@ -146,6 +160,7 @@ export default function App() {
               <SectionModal
                 section={editingSection}
                 updateSection={updateSection}
+                updatePeriod={updatePeriod}
                 setSelectedCRN={setSelectedCRN}
               />
             )}
