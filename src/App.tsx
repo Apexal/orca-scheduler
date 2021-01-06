@@ -29,7 +29,7 @@ export default function App() {
   const [selectedCRN, setSelectedCRN] = React.useState<string | null>(null);
 
   // Fetch sections from CRNs
-  const addSections = (newCRNs: string[]) => {
+  function addSections(newCRNs: string[]) {
     if (isFetching || !selectedSemesterId) return;
 
     // Determine missing CRNS to fetch
@@ -65,18 +65,18 @@ export default function App() {
           setIsFetching(false);
         });
     }
-  };
+  }
 
-  const updateSection = (crn: string, updates: Partial<CourseSection>) => {
+  function updateSection(crn: string, updates: Partial<CourseSection>) {
     const newSections = sections.map((s) =>
       s.crn === crn ? { ...s, ...updates } : s
     );
     setSections(newSections);
-  };
+  }
 
-  const removeSection = (crn: string) => {
+  function removeSection(crn: string) {
     setSections(sections.filter((s) => s.crn !== crn));
-  };
+  }
 
   function updatePeriod(
     crn: string,
@@ -92,7 +92,7 @@ export default function App() {
     });
   }
 
-  const addNewCRNs = (event: React.FormEvent<HTMLFormElement>) => {
+  function addNewCRNs(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const newCRNs = event.currentTarget["new-crns"].value
       .trim()
@@ -101,11 +101,11 @@ export default function App() {
 
     addSections(newCRNs);
     event.currentTarget["new-crns"].value = "";
-  };
+  }
 
-  const handleSemesterChange = (event: React.FormEvent<HTMLSelectElement>) => {
+  function handleSemesterChange(event: React.FormEvent<HTMLSelectElement>) {
     setSelectedSemesterId(event.currentTarget.value);
-  };
+  }
 
   // Fetch semesters
   React.useEffect(() => {

@@ -27,6 +27,13 @@ export default function SectionModal({
   };
 
   function handlePeriodChange(periodIndex: number, key: string, value: any) {
+    if (key === "start_time" && value > section.periods[periodIndex].end_time) {
+      return;
+    }
+    if (key === "end_time" && value < section.periods[periodIndex].start_time) {
+      return;
+    }
+
     updatePeriod(section.crn, periodIndex, {
       [key]: value
     });
