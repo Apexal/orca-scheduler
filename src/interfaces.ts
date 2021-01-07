@@ -26,6 +26,11 @@ export interface CourseSectionPeriod {
   [key: string]: any;
 }
 
+export interface ValidCourseSectionPeriod extends CourseSectionPeriod {
+  start_time: string;
+  end_time: string;
+}
+
 export interface Notification {
   type: "danger" | "success" | "info";
   message: string;

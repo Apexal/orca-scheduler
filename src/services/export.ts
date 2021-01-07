@@ -1,7 +1,12 @@
 import { createEvents, EventAttributes } from "ics";
 import RRule from "rrule";
 
-import { CourseSection, CourseSectionPeriod, Semester } from "../interfaces";
+import {
+  CourseSection,
+  CourseSectionPeriod,
+  Semester,
+  ValidCourseSectionPeriod
+} from "../interfaces";
 import {
   capitalize,
   dateToRRuleDateArray,
@@ -46,7 +51,7 @@ function periodToICALEvent(
   startDate: Date,
   endDate: Date,
   section: CourseSection,
-  period: CourseSectionPeriod
+  period: ValidCourseSectionPeriod
 ): EventAttributes {
   // Generate proper recurrence rule for this period
   startDate = firstDayAferDate(startDate, period.days);
@@ -90,7 +95,12 @@ export function generateICSFromSections(
       section.periods
         .filter(filterIncompletePeriods)
         .map((period) =>
-          periodToICALEvent(semesterStartDate, semesterEndDate, section, period)
+          periodToICALEvent(
+            semesterStartDate,
+            semesterEndDate,
+            section,
+            period as ValidCourseSectionPeriod
+          )
         )
     )
     .flat();
