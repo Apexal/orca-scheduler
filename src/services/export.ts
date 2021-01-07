@@ -71,6 +71,13 @@ function periodToICALEvent(
   };
 }
 
+function filterIncompletePeriods(period: CourseSectionPeriod) {
+  if (period.days.length === 0 || !period.start_time || !period.end_time) {
+    return false;
+  }
+  return true;
+}
+
 export function generateICSFromSections(
   semester: Semester,
   sections: CourseSection[]
@@ -80,9 +87,11 @@ export function generateICSFromSections(
 
   const events = sections
     .map((section) =>
-      section.periods.map((period) =>
-        periodToICALEvent(semesterStartDate, semesterEndDate, section, period)
-      )
+      section.periods
+        .filter(filterIncompletePeriods)
+        .map((period) =>
+          periodToICALEvent(semesterStartDate, semesterEndDate, section, period)
+        )
     )
     .flat();
   return createEvents(events);

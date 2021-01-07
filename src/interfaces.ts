@@ -20,8 +20,8 @@ export interface CourseSection {
 
 export interface CourseSectionPeriod {
   days: number[];
-  start_time: string;
-  end_time: string;
+  start_time: string | null;
+  end_time: string | null;
   instructors: string[];
   [key: string]: any;
 }
