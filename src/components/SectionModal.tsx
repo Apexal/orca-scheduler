@@ -27,10 +27,12 @@ export default function SectionModal({
   };
 
   function handlePeriodChange(periodIndex: number, key: string, value: any) {
-    if (key === "start_time" && value > section.periods[periodIndex].end_time) {
+    const p = section.periods[periodIndex];
+
+    if (p.end_time && key === "start_time" && value > p.end_time) {
       return;
     }
-    if (key === "end_time" && value < section.periods[periodIndex].start_time) {
+    if (p.start_time && key === "end_time" && value < p.start_time) {
       return;
     }
 
@@ -76,7 +78,7 @@ export default function SectionModal({
               </thead>
               <tbody>
                 {section.periods.map((p, periodIndex) => (
-                  <tr key={p.days + p.start_time}>
+                  <tr key={p.days + p.start_time!}>
                     <td>
                       <select
                         defaultValue={p.days.map((d) => d.toString())}
@@ -126,8 +128,8 @@ export default function SectionModal({
                     <td>
                       <input
                         type="time"
-                        defaultValue={p.start_time}
-                        max={p.end_time}
+                        defaultValue={p.start_time ?? undefined}
+                        max={p.end_time ?? undefined}
                         onChange={(event) =>
                           handlePeriodChange(
                             periodIndex,
@@ -138,8 +140,8 @@ export default function SectionModal({
                       />
                       <input
                         type="time"
-                        defaultValue={p.end_time}
-                        min={p.start_time}
+                        defaultValue={p.end_time ?? undefined}
+                        min={p.start_time ?? undefined}
                         onChange={(event) =>
                           handlePeriodChange(
                             periodIndex,

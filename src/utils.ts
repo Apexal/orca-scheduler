@@ -33,6 +33,9 @@ export function sectionInstructors(section: CourseSection) {
 }
 
 export function periodDuration(period: CourseSectionPeriod) {
+  if (!period.start_time || !period.end_time) {
+    return { hours: 0, minutes: 0 };
+  }
   const interval = {
     start: timeStringToDate(new Date(), period.start_time),
     end: timeStringToDate(new Date(), period.end_time)

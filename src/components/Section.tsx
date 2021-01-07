@@ -1,8 +1,6 @@
 import React from "react";
 import { CourseSection } from "../interfaces";
 
-const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
 type PropTypes = {
   section: CourseSection;
   setSelectedCRN: (crn: string | null) => void;
@@ -41,12 +39,6 @@ export default function Section({
         CRN {section.crn} | Section {section.section_id} |{" "}
         {section.credits.join("/")} Credits | {section.instruction_method}
       </p>
-
-      {/* <details>
-        <summary>Show Schedule</summary>
-
-        
-      </details> */}
     </div>
   );
 }
