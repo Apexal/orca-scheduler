@@ -127,15 +127,17 @@ export default function App() {
   const editingSection = sections.find((s) => s.crn === selectedCRN);
 
   function exportAsICS() {
-    const { error, value } = generateICSFromSections(semesters[0], sections);
-    if (error) {
+    //Might want to add some error checking
+    const value = generateICSFromSections(semesters[0], sections);
+    download(selectedSemesterId + ".ical", value.toString());
+    /*if (error) {
       addNotification({
         type: "danger",
         message: "Failed to download!"
       });
     } else if (value) {
       download(selectedSemesterId + ".ical", value);
-    }
+    }*/
   }
 
   return (
